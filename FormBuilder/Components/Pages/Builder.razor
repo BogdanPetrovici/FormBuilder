@@ -18,24 +18,30 @@
             }
         </div>
         <FluentDropZone Id="Designer" Droppable="true" Style="width: 500px; height: 500px; border: 1px solid; padding: 5px; margin: 5px;">
-            @foreach (var formItem in formItems)
-            {
-                switch (formItem.Type)
+            <FluentStack Orientation="Orientation.Vertical">
+                @foreach (var formItem in formItems)
                 {
-                    case FormItemType.Input:
-                        <FluentStack>
-                            <FluentInputLabel>InputLabel</FluentInputLabel>
-                            <FluentTextField></FluentTextField>
-                        </FluentStack>
-                        break;
-                    case FormItemType.Button:
-                        <FluentButton>Button</FluentButton>
-                        break;
-                    case FormItemType.DropDown:
-                        <FluentCombobox Placeholder="Select an item..." Items="@comboBoxItems" />
-                        break;
+                    <div class="form-control-container @(formItem.Guid == selectedFormItemId ? "selected" : "")"
+                         @onclick="(e) => SelectDesignerObject(formItem.Guid)"
+                         @onclick:preventDefault="true">
+                        @switch (formItem.Type)
+                        {
+                            case FormItemType.Input:
+                                <FluentStack VerticalAlignment="VerticalAlignment.Center">
+                                    <FluentInputLabel>InputLabel</FluentInputLabel>
+                                    <FluentTextField></FluentTextField>
+                                </FluentStack>
+                                break;
+                            case FormItemType.Button:
+                                <FluentButton>Button</FluentButton>
+                                break;
+                            case FormItemType.DropDown:
+                                <FluentCombobox Placeholder="Select an item..." Items="@comboBoxItems" />
+                                break;
+                        }
+                    </div>
                 }
-            }
+            </FluentStack>
         </FluentDropZone>
     </FluentStack>
 </FluentDragContainer>
@@ -54,7 +60,9 @@
 
     public class FormItem
     {
+        public Guid Guid { get; } = Guid.NewGuid();
         public FormItemType Type { get; set; }
+        public bool Selected { get; set; }
     }
 
     public List<string> comboBoxItems = new List<string> { "Item 1", "Item 2", "Item 3" };
@@ -67,6 +75,12 @@
     };
 
     public List<FormItem> formItems = new List<FormItem>();
+    public Guid selectedFormItemId = Guid.Empty;
+
+    private void SelectDesignerObject(Guid formItemId)
+    {
+        selectedFormItemId = formItemId;
+    }
 
     private void OnDragEnter(FluentDragEventArgs<string> eventArgs)
     {

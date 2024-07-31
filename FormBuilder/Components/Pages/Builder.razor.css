@@ -1,0 +1,7 @@
+﻿.selected {
+    border: 1px solid orange;
+}
+
+.form-control-container{
+    width: 100%;
+}

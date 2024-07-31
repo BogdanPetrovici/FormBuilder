@@ -4,6 +4,96 @@
 <PageTitle>Form Builder</PageTitle>
 <h3>Form Builder</h3>
 
-@code {
+<FluentDragContainer TItem="string"
+                     OnDragEnter="@OnDragEnter"
+                     OnDragLeave="@OnDragLeave"
+                     OnDropEnd="@OnDropEnd">
+    <FluentStack>
+        <div style="width: 500px; height: 500px; border: 1px solid; padding: 5px; margin: 5px;">
+            @foreach (var toolboxItem in toolboxItems)
+            {
+                <FluentDropZone Id="@toolboxItem.Type.ToString()" Draggable="true">
+                    <FluentButton>@toolboxItem.Name</FluentButton>
+                </FluentDropZone>
+            }
+        </div>
+        <FluentDropZone Id="Designer" Droppable="true" Style="width: 500px; height: 500px; border: 1px solid; padding: 5px; margin: 5px;">
+            @foreach (var formItem in formItems)
+            {
+                switch (formItem.Type)
+                {
+                    case FormItemType.Input:
+                        <FluentStack>
+                            <FluentInputLabel>InputLabel</FluentInputLabel>
+                            <FluentTextField></FluentTextField>
+                        </FluentStack>
+                        break;
+                    case FormItemType.Button:
+                        <FluentButton>Button</FluentButton>
+                        break;
+                    case FormItemType.DropDown:
+                        <FluentCombobox Placeholder="Select an item..." Items="@comboBoxItems" />
+                        break;
+                }
+            }
+        </FluentDropZone>
+    </FluentStack>
+</FluentDragContainer>
 
+@code {
+    public enum FormItemType
+    {
+        Input, Button, DropDown
+    }
+
+    public class ToolboxItem
+    {
+        public string Name { get; set; }
+        public FormItemType Type { get; set; }
+    }
+
+    public class FormItem
+    {
+        public FormItemType Type { get; set; }
+    }
+
+    public List<string> comboBoxItems = new List<string> { "Item 1", "Item 2", "Item 3" };
+
+    public List<ToolboxItem> toolboxItems = new List<ToolboxItem>
+    {
+        new ToolboxItem{ Name="Text input", Type = FormItemType.Input},
+        new ToolboxItem{ Name="Button", Type = FormItemType.Button},
+        new ToolboxItem{ Name="Drop-down control", Type = FormItemType.DropDown},
+    };
+
+    public List<FormItem> formItems = new List<FormItem>();
+
+    private void OnDragEnter(FluentDragEventArgs<string> eventArgs)
+    {
+
+    }
+
+    private void OnDragLeave(FluentDragEventArgs<string> eventArgs)
+    {
+
+    }
+
+    private void OnDropEnd(FluentDragEventArgs<string> eventArgs)
+    {
+        if (eventArgs.Source.Id != null)
+        {
+            switch (eventArgs.Source.Id)
+            {
+                case nameof(FormItemType.Input):
+                    formItems.Add(new FormItem { Type = FormItemType.Input });
+                    break;
+                case nameof(FormItemType.Button):
+                    formItems.Add(new FormItem { Type = FormItemType.Button });
+                    break;
+                case nameof(FormItemType.DropDown):
+                    formItems.Add(new FormItem { Type = FormItemType.DropDown });
+                    break;
+            }
+        }
+    }
 }
